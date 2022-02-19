@@ -12,14 +12,16 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Stock> stockList = [];
 
   void registerControllers(Stock stock) {
-    stock.stockController.nameController = getTextEditingController();
-    stock.stockController.unitsController = getTextEditingController();
-    stock.stockController.priceController = getTextEditingController();
-    stock.stockController.costController = getTextEditingController();
+    if (stock.stockController.nameController == null) {
+      stock.stockController.nameController = getTextEditingController();
+      stock.stockController.unitsController = getTextEditingController();
+      stock.stockController.priceController = getTextEditingController();
+      stock.stockController.costController = getTextEditingController();
+    }
   }
 
   TextEditingController getTextEditingController() {
-    return new TextEditingController()
+    return TextEditingController()
       ..addListener(() {
         onChangeEvent();
       });
@@ -27,10 +29,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void disploseControllers(List<Stock> controllerList) {
     for (var controller in controllerList) {
-      controller.stockController.nameController.dispose();
-      controller.stockController.unitsController.dispose();
-      controller.stockController.priceController.dispose();
-      controller.stockController.costController.dispose();
+      controller.stockController.nameController?.dispose();
+      controller.stockController.unitsController?.dispose();
+      controller.stockController.priceController?.dispose();
+      controller.stockController.costController?.dispose();
     }
   }
 
@@ -43,17 +45,19 @@ class _MyHomePageState extends State<MyHomePage> {
   onChangeEvent() {
     for (var item in stockList) {
       var stockController = item.stockController;
-      var units = double.tryParse(stockController.unitsController.text) ?? 0;
-      var price = double.tryParse(stockController.priceController.text) ?? 0;
+      var units =
+          double.tryParse(stockController.unitsController?.text ?? "") ?? 0;
+      var price =
+          double.tryParse(stockController.priceController?.text ?? "") ?? 0;
       var cost = units * price;
-      item.stockController.costController.value = item
-          .stockController.costController.value
-          .copyWith(text: cost.toString());
+      item.stockController.costController?.value = item
+              .stockController.costController?.value
+              .copyWith(text: cost.toString()) ??
+          const TextEditingValue();
     }
   }
 
   Widget singleItemList(Stock stock) {
-    print("here");
     registerControllers(stock);
     return Container(
       decoration: const BoxDecoration(
@@ -124,8 +128,8 @@ class Stock {
 }
 
 class StockController {
-  late TextEditingController nameController;
-  late TextEditingController unitsController;
-  late TextEditingController priceController;
-  late TextEditingController costController;
+  TextEditingController? nameController;
+  TextEditingController? unitsController;
+  TextEditingController? priceController;
+  TextEditingController? costController;
 }

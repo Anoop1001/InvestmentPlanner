@@ -15,7 +15,7 @@ class TextFieldProvider {
   }
 
   static TextField getControllerBasic(TextInputType keyboardType,
-      TextEditingController textEditingController, String? placeholder,
+      TextEditingController? textEditingController, String? placeholder,
       {bool readOnly = false}) {
     return TextField(
         keyboardType: keyboardType,
