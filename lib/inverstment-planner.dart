@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:investment_planner/text-field-provider.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -10,6 +11,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Stock> stockList = [];
+  Map<String, double> stockDetails = {};
 
   void registerControllers(Stock stock) {
     if (stock.stockController.nameController == null) {
@@ -42,7 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  onChangeEvent() {
+  onChangeEvent({bool buildChart = false}) {
+    stockDetails = {};
     for (var item in stockList) {
       var stockController = item.stockController;
       var units =
@@ -54,6 +57,9 @@ class _MyHomePageState extends State<MyHomePage> {
               .stockController.costController?.value
               .copyWith(text: cost.toString()) ??
           const TextEditingValue();
+      if (buildChart) {
+        stockDetails[stockController.nameController?.text ?? ""] = cost;
+      }
     }
   }
 
@@ -90,11 +96,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
             title: const Text("Investment Planner"),
             backgroundColor: Colors.black,
             foregroundColor: Colors.white),
-        body: Column(children: [
+        body: SingleChildScrollView(
+            child: Column(children: [
           ListView.builder(
               shrinkWrap: true,
               itemCount: stockList.length,
@@ -107,15 +115,44 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
           TextButton(
             style: ButtonStyle(
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-            ),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.black)),
             onPressed: () {
               stockList.add(Stock());
               setState(() {});
             },
             child: const Text('Add Stocks'),
-          )
-        ]));
+          ),
+          TextButton(
+            style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.black)),
+            onPressed: () {
+              onChangeEvent(buildChart: true);
+              setState(() {});
+            },
+            child: const Text('Analyze'),
+          ),
+          Container(
+              child: stockDetails.isEmpty
+                  ? const Text("")
+                  : PieChart(
+                      dataMap: stockDetails,
+                      animationDuration: const Duration(milliseconds: 800),
+                      chartLegendSpacing: 32,
+                      chartRadius: MediaQuery.of(context).size.width / 3.2,
+                      colorList: const [
+                        Colors.green,
+                        Colors.blue,
+                        Colors.orange,
+                        Colors.pink,
+                        Colors.red,
+                        Colors.yellow
+                      ],
+                    ))
+        ])));
   }
 }
 
@@ -132,4 +169,29 @@ class StockController {
   TextEditingController? unitsController;
   TextEditingController? priceController;
   TextEditingController? costController;
+}
+
+TextField getControllerBasic(
+    TextInputType keyboardType,
+    TextEditingController? textEditingController,
+    BuildContext context,
+    String? placeholder,
+    {bool readOnly = false}) {
+  return TextField(
+      keyboardType: keyboardType,
+      controller: textEditingController,
+      enabled: !readOnly,
+      onSubmitted: (_) => context.nextEditableTextFocus(),
+      decoration: InputDecoration(
+        labelText: placeholder,
+      ));
+}
+
+extension Utility on BuildContext {
+  void nextEditableTextFocus() {
+    do {
+      FocusScope.of(this).nextFocus();
+    } while (
+        FocusScope.of(this).focusedChild?.context?.widget is! EditableText);
+  }
 }

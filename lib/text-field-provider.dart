@@ -20,7 +20,7 @@ class TextFieldProvider {
     return TextField(
         keyboardType: keyboardType,
         controller: textEditingController,
-        readOnly: readOnly,
+        enabled: !readOnly,
         decoration: InputDecoration(
           labelText: placeholder,
         ));
