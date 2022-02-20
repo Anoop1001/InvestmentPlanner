@@ -101,57 +101,75 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.black,
             foregroundColor: Colors.white),
         body: SingleChildScrollView(
-            child: Column(children: [
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: stockList.length,
-              itemBuilder: (context, index) {
-                if (stockList.isEmpty) {
-                  return const CircularProgressIndicator();
-                } else {
-                  return singleItemList(stockList[index]);
-                }
-              }),
-          TextButton(
-            style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.black)),
-            onPressed: () {
-              stockList.add(Stock());
-              setState(() {});
-            },
-            child: const Text('Add Stocks'),
-          ),
-          TextButton(
-            style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.black)),
-            onPressed: () {
-              onChangeEvent(buildChart: true);
-              setState(() {});
-            },
-            child: const Text('Analyze'),
-          ),
-          Container(
-              child: stockDetails.isEmpty
-                  ? const Text("")
-                  : PieChart(
-                      dataMap: stockDetails,
-                      animationDuration: const Duration(milliseconds: 800),
-                      chartLegendSpacing: 32,
-                      chartRadius: MediaQuery.of(context).size.width / 3.2,
-                      colorList: const [
-                        Colors.green,
-                        Colors.blue,
-                        Colors.orange,
-                        Colors.pink,
-                        Colors.red,
-                        Colors.yellow
-                      ],
-                    ))
-        ])));
+            child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: ListView(children: [
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.black)),
+                    onPressed: () {
+                      stockList.removeLast();
+                      setState(() {});
+                    },
+                    child: const Text('Remove'),
+                  ),
+                  ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: stockList.length,
+                      itemBuilder: (context, index) {
+                        if (stockList.isEmpty) {
+                          return const CircularProgressIndicator();
+                        } else {
+                          return singleItemList(stockList[index]);
+                        }
+                      }),
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.black)),
+                    onPressed: () {
+                      stockList.add(Stock());
+                      setState(() {});
+                    },
+                    child: const Text('Add'),
+                  ),
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.black)),
+                    onPressed: () {
+                      onChangeEvent(buildChart: true);
+                      setState(() {});
+                    },
+                    child: const Text('Analyze'),
+                  ),
+                  Container(
+                      child: stockDetails.isEmpty
+                          ? const Text("")
+                          : PieChart(
+                              dataMap: stockDetails,
+                              animationDuration:
+                                  const Duration(milliseconds: 800),
+                              chartLegendSpacing: 32,
+                              chartRadius:
+                                  MediaQuery.of(context).size.width / 3.2,
+                              colorList: const [
+                                Colors.green,
+                                Colors.blue,
+                                Colors.orange,
+                                Colors.pink,
+                                Colors.red,
+                                Colors.yellow
+                              ],
+                            ))
+                ]))));
   }
 }
 
